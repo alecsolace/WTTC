@@ -7,7 +7,7 @@
     "build": "tsc ",
     "start": "npm run deploy:commands node build/index.js ",
     "dev": "concurrently \"tsc -w\" \"nodemon build/index.js\" ",
-    "deploy:commands": "tsc && node build/deploy-commands.js "
+    "deploy:commands": "node build/deploy-commands.js "
   },
   "keywords": [],
   "author": "",
