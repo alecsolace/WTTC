@@ -1,6 +1,6 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
 
-const creds = require("../client_secret.json");
+const creds = require("../google-credentials.json");
 type Ship = {
   manufacturer: string;
   model: string;

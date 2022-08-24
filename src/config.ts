@@ -1,6 +1,4 @@
 import dotenv from "dotenv";
-import { google } from "googleapis";
-import { GoogleAuth } from "google-auth-library";
 
 dotenv.config();
 
