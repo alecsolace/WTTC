@@ -1,6 +1,4 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import fetch from "node-fetch";
-import { GoogleSpreadsheet } from "google-spreadsheet";
 import { Client, CommandInteraction, MessageEmbed } from "discord.js";
 import { accessSpreadsheet } from "../googleConfig";
 
