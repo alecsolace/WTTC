@@ -59,7 +59,6 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     );
 
   shipData.foundShips.forEach((owner: any) => {
-    console.log(owner);
     embeddedMessage.addField("Owner", owner, true);
   });
 
