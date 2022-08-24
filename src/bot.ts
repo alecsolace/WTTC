@@ -1,4 +1,4 @@
-import { Client, MessageEmbed } from "discord.js";
+import { Client } from "discord.js";
 import config from "./config";
 import * as commandModules from "./commands";
 
@@ -8,7 +8,7 @@ export const client = new Client({
   intents: ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES"],
 });
 
-client.once("ready", () => {
+client.once("ready", async () => {
   console.log("Bot ready");
 });
 

@@ -1,14 +1,30 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import fetch from "node-fetch";
 import { GoogleSpreadsheet } from "google-spreadsheet";
-import {
-  Client,
-  CommandInteraction,
-  MessageEmbed,
-  TextChannel,
-  ThreadChannel,
-} from "discord.js";
+import { Client, CommandInteraction, MessageEmbed } from "discord.js";
+import { accessSpreadsheet } from "../googleConfig";
 
+async function findOwners(shipName: string) {
+  let ships = await accessSpreadsheet();
+  let foundShips: string[] = [];
+  let manufacturer: string = "";
+  let model: string = "";
+  ships.forEach((ship) => {
+    if (
+      ship.model.toLowerCase().includes(shipName.toLowerCase()) &&
+      !foundShips.includes(ship.owner)
+    ) {
+      model = ship.model;
+      manufacturer = ship.manufacturer;
+      foundShips.push(ship.owner);
+    }
+  });
+  return {
+    model: model,
+    manufacturer: manufacturer,
+    foundShips: foundShips,
+  };
+}
 export const data = new SlashCommandBuilder()
   .setName("ship")
   .setDescription("Returns information on the selected ship")
@@ -19,23 +35,6 @@ export const data = new SlashCommandBuilder()
       .setRequired(true)
   );
 
-async function accessSpreadsheet() {
-    const doc = new GoogleSpreadsheet('1qA11t460-ceILmwu6RtfiPGb_n9MUD_7z6Ld7I_Z6yc');
-    await promisify(doc.useServiceAccountAuth)(creds);
-    const info = await promisify(doc.getInfo)();
-    var sheet = info.worksheets[0];
-
-    var cells = await promisify(sheet.getCells)({
-        'min-row': 2,
-        'max-row': 5,
-        'min-col': 3,
-        'max-col': 3,
-        'return-empty': true,
-    })
-    for (var cell of cells) {
-        message.author.send(cell.value)
-    }
-}
 export async function execute(interaction: CommandInteraction, client: Client) {
   if (!interaction?.channelId) {
     return;
@@ -47,34 +46,26 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     return;
   }
 
+  const shipName = interaction.options.getString("ship")!;
+  let shipData = await findOwners(shipName);
+
   const embeddedMessage = new MessageEmbed()
     .setColor("#0099ff")
     .setAuthor("WTTC-Bot")
     .setTimestamp()
-    .setFooter("WTTC-Bot");
-
-  const shipName = interaction.options.getString("ship")!;
-  let shipData;
-  try {
-    const response = await fetch(
-      `https://api.star-citizen.wiki/api/vehicles/${shipName}`,
-      {
-        method: "GET",
-        headers: {},
-      }
+    .setFooter("WTTC-Bot")
+    .setDescription(
+      `The ${shipData.manufacturer} ${shipData.model} is owned by the following members`
     );
 
-    if (response.ok) {
-      const result = await response.json();
+  shipData.foundShips.forEach((owner: any) => {
+    console.log(owner);
+    embeddedMessage.addField("Owner", owner, true);
+  });
 
-      console.log(result);
-    }
-  } catch (err) {
-    console.error(err);
-  }
   const { user } = interaction;
 
-  embeddedMessage.setTitle(shipName);
+  embeddedMessage.setTitle(`${shipData.manufacturer} ${shipData.model}`);
 
   interaction.reply({ embeds: [embeddedMessage] });
 }
