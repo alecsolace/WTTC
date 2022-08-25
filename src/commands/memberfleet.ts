@@ -29,7 +29,7 @@ async function findShips(member: string) {
 }
 
 export const data = new SlashCommandBuilder()
-  .setName("myships")
+  .setName("memberfleet")
   .setDescription("Returns a list of your owned ships")
   .addStringOption(
     (option) =>
