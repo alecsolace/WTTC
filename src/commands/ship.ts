@@ -7,17 +7,17 @@ async function findOwners(shipName: string) {
   let foundShips: string[] = [];
   let manufacturer: string = "";
   let model: string = shipName;
-  ships.forEach((ship) => {
+  for (let i = 0; i < ships.length; i++) {
     if (
-      ship.model.toLowerCase().includes(shipName.toLowerCase()) &&
-      !foundShips.includes(ship.owner) &&
-      ship.model.toLowerCase().includes(model)
+      ships[i].model.toLowerCase().includes(shipName.toLowerCase()) &&
+      !foundShips.includes(ships[i].owner) &&
+      ships[i].model.toLowerCase().includes(model)
     ) {
-      model = ship.model;
-      manufacturer = ship.manufacturer;
-      foundShips.push(ship.owner);
+      model = ships[i].model;
+      manufacturer = ships[i].manufacturer;
+      foundShips.push(ships[i].owner);
     }
-  });
+  }
   return {
     model: model,
     manufacturer: manufacturer,
