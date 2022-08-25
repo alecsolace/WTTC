@@ -47,7 +47,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     return;
   }
   const embeddedMessage = new MessageEmbed()
-    .setTitle(memberShips[0].owner)
+    .setTitle(memberShips[0].manufacturer)
     .setColor("AQUA")
     .setAuthor(`WTTC-Bot`)
     .setTimestamp()
