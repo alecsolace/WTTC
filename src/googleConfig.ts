@@ -74,3 +74,27 @@ export async function getShips() {
   });
   return ships;
 }
+
+export async function getManufacturers() {
+  const doc = new GoogleSpreadsheet(
+    "1P8X1knEkndqaZsavvnRKlmaDV3_tC9DTCrn8yMIwIyE"
+  );
+  await doc.useServiceAccountAuth(creds);
+  await doc.loadInfo();
+
+  const sheet = doc.sheetsByIndex[2];
+  await sheet.loadHeaderRow(3);
+  const rows = await sheet.getRows();
+
+  let ships: { manufacturer: string; model: string }[] = [];
+  rows.forEach((row) => {
+    if (row.Name != null) {
+      let ship: { manufacturer: string; model: string } = {
+        manufacturer: row.Manufacturer,
+        model: row.Name,
+      };
+      ships.push(ship);
+    }
+  });
+  return ships;
+}
