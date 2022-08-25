@@ -6,11 +6,12 @@ async function findOwners(shipName: string) {
   let ships = await accessSpreadsheet();
   let foundShips: string[] = [];
   let manufacturer: string = "";
-  let model: string = "";
+  let model: string = shipName;
   ships.forEach((ship) => {
     if (
       ship.model.toLowerCase().includes(shipName.toLowerCase()) &&
-      !foundShips.includes(ship.owner)
+      !foundShips.includes(ship.owner) &&
+      ship.model.toLowerCase().includes(model)
     ) {
       model = ship.model;
       manufacturer = ship.manufacturer;
