@@ -1,5 +1,10 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Client, CommandInteraction, MessageEmbed } from "discord.js";
+import {
+  Client,
+  CommandInteraction,
+  EmbedFieldData,
+  MessageEmbed,
+} from "discord.js";
 import { accessSpreadsheet } from "../googleConfig";
 const members: [name: string, value: string][] = Object(
   require("../../members.json")
@@ -54,7 +59,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   const embeddedMessage = new MessageEmbed()
     .setTitle(memberShips[0].owner)
     .setColor("AQUA")
-    .setAuthor(`WTTC-Bot`)
+    .setAuthor("WTTC-Bot")
     .setTimestamp()
     .setFooter("WTTC-Bot")
     .setDescription(`The ships owned by ${memberShips[0].owner}`);
@@ -66,7 +71,12 @@ export async function execute(interaction: CommandInteraction, client: Client) {
         ships += "\n" + ship.model;
       }
     });
-    embeddedMessage.addField(manufacturer, ships, true);
+    let fields: EmbedFieldData = {
+      name: manufacturer,
+      value: ships,
+      inline: true,
+    };
+    embeddedMessage.addFields([fields]);
   });
 
   const { user } = interaction;

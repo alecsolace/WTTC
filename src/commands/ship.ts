@@ -1,5 +1,10 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Client, CommandInteraction, MessageEmbed } from "discord.js";
+import {
+  Client,
+  CommandInteraction,
+  EmbedFieldData,
+  MessageEmbed,
+} from "discord.js";
 import { accessSpreadsheet } from "../googleConfig";
 
 async function findOwners(shipName: string) {
@@ -58,7 +63,12 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     );
 
   shipData.foundShips.forEach((owner: any) => {
-    embeddedMessage.addField("Owner", owner, true);
+    let field: EmbedFieldData = {
+      name: "Owner",
+      value: owner,
+      inline: true,
+    };
+    embeddedMessage.addFields([field]);
   });
 
   const { user } = interaction;
