@@ -1,5 +1,10 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Client, CommandInteraction, MessageEmbed } from "discord.js";
+import {
+  Client,
+  CommandInteraction,
+  EmbedFieldData,
+  MessageEmbed,
+} from "discord.js";
 import { accessSpreadsheet, getManufacturers } from "../googleConfig";
 const members: [name: string, value: string][] = Object(
   require("../../members.json")
@@ -49,19 +54,24 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   const embeddedMessage = new MessageEmbed()
     .setTitle(memberShips[0].manufacturer)
     .setColor("AQUA")
-    .setAuthor(`WTTC-Bot`)
+    .setAuthor("WTTC-Bot")
     .setTimestamp()
     .setFooter("WTTC-Bot")
-    .setDescription(`The brand ${memberShips[0].manufacturer} has the following ships: `);
+    .setDescription(
+      `The brand ${memberShips[0].manufacturer} has the following ships: `
+    );
 
-  memberShips = memberShips.sort((a, b) =>
-    a.model > b.model ? 1 : -1
-  );
+  memberShips = memberShips.sort((a, b) => (a.model > b.model ? 1 : -1));
   memberShips.forEach((ship) => {
-    embeddedMessage.addField(ship.manufacturer, ship.model, true);
+    let field: EmbedFieldData = {
+      name: ship.manufacturer,
+      value: ship.model,
+      inline: true,
+    };
+    embeddedMessage.addFields([field]);
   });
 
-  const { user } = interaction; 
+  const { user } = interaction;
 
   interaction.reply({ embeds: [embeddedMessage] });
 }
