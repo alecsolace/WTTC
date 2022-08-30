@@ -4,18 +4,7 @@ import { accessSpreadsheet } from "../googleConfig";
 const members: [name: string, value: string][] = Object(
   require("../../members.json")
 );
-
-async function getMembers() {
-  let members = await accessSpreadsheet();
-  let uniqueMembers: any[] = [];
-  members.forEach((member) => {
-    if (!uniqueMembers.includes(member.owner)) {
-      uniqueMembers.push({ value: member.owner, name: member.owner });
-    }
-  });
-
-  return uniqueMembers;
-}
+let manufacturers: string[] = [];
 async function findShips(member: string) {
   let ships = await accessSpreadsheet();
   let ownedShips: any[] = [];
@@ -23,6 +12,11 @@ async function findShips(member: string) {
   ships.forEach((ship) => {
     if (ship.owner.toLowerCase() === member.toLowerCase()) {
       ownedShips.push(ship);
+    }
+  });
+  ownedShips.forEach((ship) => {
+    if (!manufacturers.includes(ship.manufacturer)) {
+      manufacturers.push(ship.manufacturer);
     }
   });
   return ownedShips;
@@ -65,11 +59,14 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     .setFooter("WTTC-Bot")
     .setDescription(`The ships owned by ${memberShips[0].owner}`);
 
-  memberShips = memberShips.sort((a, b) =>
-    a.manufacturer > b.manufacturer ? 1 : -1
-  );
-  memberShips.forEach((ship) => {
-    embeddedMessage.addField(ship.manufacturer, ship.model, true);
+  manufacturers.forEach((manufacturer) => {
+    let ships: string = "";
+    memberShips.forEach((ship) => {
+      if (ship.manufacturer === manufacturer) {
+        ships += "\n" + ship.model;
+      }
+    });
+    embeddedMessage.addField(manufacturer, ships, true);
   });
 
   const { user } = interaction;
