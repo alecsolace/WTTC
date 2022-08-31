@@ -12,13 +12,10 @@ const members: [name: string, value: string][] = Object(
 let manufacturers: string[] = [];
 async function findShips(member: string) {
   let ships = await accessSpreadsheet();
-  let ownedShips: any[] = [];
+  let ownedShips = ships.filter(
+    (ship) => ship.owner.toLowerCase() == member.toLowerCase()
+  );
 
-  ships.forEach((ship) => {
-    if (ship.owner.toLowerCase() === member.toLowerCase()) {
-      ownedShips.push(ship);
-    }
-  });
   ownedShips.forEach((ship) => {
     if (!manufacturers.includes(ship.manufacturer)) {
       manufacturers.push(ship.manufacturer);
