@@ -5,20 +5,17 @@ import {
   EmbedFieldData,
   MessageEmbed,
 } from "discord.js";
-import { accessSpreadsheet, getManufacturers } from "../googleConfig";
+import { getManufacturers } from "../googleConfig";
 const members: [name: string, value: string][] = Object(
   require("../../members.json")
 );
 
 async function findShips(brand: string) {
   let ships = await getManufacturers();
-  let ownedShips: any[] = [];
+  let ownedShips: any[] = ships.filter((ship) =>
+    ship.manufacturer.toLowerCase().includes(brand.toLowerCase())
+  );
 
-  ships.forEach((ship) => {
-    if (ship.manufacturer.toLowerCase().includes(brand.toLowerCase())) {
-      ownedShips.push(ship);
-    }
-  });
   return ownedShips;
 }
 
