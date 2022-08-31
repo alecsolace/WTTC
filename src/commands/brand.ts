@@ -48,7 +48,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   const brand = interaction.options.getString("brand")!;
   let memberShips = await findShips(brand);
   if (memberShips.length == 0) {
-    interaction.reply(`Could not find ships for member: ${brand}`);
+    interaction.reply(`Could not find ships for: ${brand}`);
     return;
   }
   const embeddedMessage = new MessageEmbed()

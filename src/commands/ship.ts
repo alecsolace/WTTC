@@ -53,6 +53,17 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   const shipName = interaction.options.getString("ship")!;
   let shipData = await findOwners(shipName);
 
+  if (
+    shipData === undefined ||
+    shipData === null ||
+    shipData.foundShips.length === 0
+  ) {
+    interaction.reply(
+      `There's been an error finding the owners of ${shipName}`
+    );
+    return;
+  }
+
   const embeddedMessage = new MessageEmbed()
     .setColor("#0099ff")
     .setAuthor("WTTC-Bot")
@@ -70,8 +81,6 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     };
     embeddedMessage.addFields([field]);
   });
-
-  const { user } = interaction;
 
   embeddedMessage.setTitle(`${shipData.manufacturer} ${shipData.model}`);
 
