@@ -66,9 +66,9 @@ export async function execute(interaction: CommandInteraction, client: Client) {
 
   const embeddedMessage = new MessageEmbed()
     .setColor("#0099ff")
-    .setAuthor("WTTC-Bot")
+    .setAuthor({ name: "WTTC-Bot" })
     .setTimestamp()
-    .setFooter("WTTC-Bot")
+    .setFooter({ text: "WTTC-Bot" })
     .setDescription(
       `The ${shipData.manufacturer} ${shipData.model} is owned by the following members`
     );

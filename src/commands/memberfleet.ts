@@ -56,9 +56,9 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   const embeddedMessage = new MessageEmbed()
     .setTitle(memberShips[0].owner)
     .setColor("AQUA")
-    .setAuthor("WTTC-Bot")
+    .setAuthor({ name: "WTTC-Bot" })
     .setTimestamp()
-    .setFooter("WTTC-Bot")
+    .setFooter({ text: "WTTC-Bot" })
     .setDescription(`The ships owned by ${memberShips[0].owner}`);
 
   manufacturers.forEach((manufacturer) => {
