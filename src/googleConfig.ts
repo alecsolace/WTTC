@@ -100,8 +100,5 @@ export async function getFleetValues() {
   const totalShips = rows[0].Total_Ships;
   const fleetValue = rows[0].Total_Fleet_Value;
   const valueMember = rows[0].Average_Per_Member;
-  console.log("TotalShips = ", totalShips);
-  console.log("FleetValue = ", fleetValue);
-  console.log("valueMember = ", valueMember);
   return { totalShips, fleetValue, valueMember };
 }
