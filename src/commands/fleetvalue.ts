@@ -10,7 +10,7 @@ const members: [name: string, value: string][] = Object(
   require("../../members.json")
 );
 
-async function getValue(brand: string) {
+async function getValue() {
   let data = await getFleetValues();
 
   return data;
@@ -26,7 +26,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   }
 
   const channel = await client.channels.fetch(interaction.channelId);
-  const data = await getFleetValues();
+  const data = await getValue();
   if (!channel || channel.type !== "GUILD_TEXT") {
     return;
   }
