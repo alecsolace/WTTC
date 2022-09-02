@@ -1,7 +1,7 @@
 import { Client } from "discord.js";
 import config from "./config";
 import * as commandModules from "./commands";
-import { getMembers, getShips } from "./googleConfig";
+import { getFleetValues, getMembers, getShips } from "./googleConfig";
 import fs from "fs";
 
 const commands = Object(commandModules);
@@ -24,6 +24,7 @@ client.once("ready", async () => {
     }
   });
   console.log("Bot ready");
+  getFleetValues();
 });
 
 client.on("interactionCreate", async (interaction) => {

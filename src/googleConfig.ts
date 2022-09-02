@@ -1,6 +1,9 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
 
 const creds = require("../google-credentials.json");
+const doc = new GoogleSpreadsheet(
+  "1P8X1knEkndqaZsavvnRKlmaDV3_tC9DTCrn8yMIwIyE"
+);
 type Ship = {
   manufacturer: string;
   model: string;
@@ -11,9 +14,6 @@ type Member = {
   name: string;
 };
 export async function accessSpreadsheet() {
-  const doc = new GoogleSpreadsheet(
-    "1P8X1knEkndqaZsavvnRKlmaDV3_tC9DTCrn8yMIwIyE"
-  );
   await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
 
@@ -34,9 +34,6 @@ export async function accessSpreadsheet() {
 }
 
 export async function getMembers() {
-  const doc = new GoogleSpreadsheet(
-    "1P8X1knEkndqaZsavvnRKlmaDV3_tC9DTCrn8yMIwIyE"
-  );
   await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
 
@@ -55,9 +52,6 @@ export async function getMembers() {
 }
 
 export async function getShips() {
-  const doc = new GoogleSpreadsheet(
-    "1P8X1knEkndqaZsavvnRKlmaDV3_tC9DTCrn8yMIwIyE"
-  );
   await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
 
@@ -76,9 +70,6 @@ export async function getShips() {
 }
 
 export async function getManufacturers() {
-  const doc = new GoogleSpreadsheet(
-    "1P8X1knEkndqaZsavvnRKlmaDV3_tC9DTCrn8yMIwIyE"
-  );
   await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
 
@@ -97,4 +88,20 @@ export async function getManufacturers() {
     }
   });
   return ships;
+}
+
+export async function getFleetValues() {
+  await doc.useServiceAccountAuth(creds);
+  await doc.loadInfo();
+
+  const sheet = doc.sheetsByIndex[0];
+  await sheet.loadHeaderRow(2);
+  const rows = await sheet.getRows();
+  const totalShips = rows[0].Total_Ships;
+  const fleetValue = rows[0].Total_Fleet_Value;
+  const valueMember = rows[0].Average_Per_Member;
+  console.log("TotalShips = ", totalShips);
+  console.log("FleetValue = ", fleetValue);
+  console.log("valueMember = ", valueMember);
+  return { totalShips, fleetValue, valueMember };
 }
