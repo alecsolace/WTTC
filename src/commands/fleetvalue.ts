@@ -39,9 +39,9 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   const embeddedMessage = new MessageEmbed()
     .setTitle("World Trading Traveling Circus")
     .setColor("AQUA")
-    .setAuthor("WTTC-Bot")
+    .setAuthor({ name: "WTTC-Bot" })
     .setTimestamp()
-    .setFooter("WTTC-Bot");
+    .setFooter({ text: "WTTC-Bot" });
 
   let field1: EmbedFieldData = {
     name: "Total ships",
