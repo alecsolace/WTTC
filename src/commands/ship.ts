@@ -9,31 +9,18 @@ import { accessSpreadsheet } from "../googleConfig";
 
 async function findOwners(shipName: string) {
   let ships = await accessSpreadsheet();
-  let foundShips: string[] = [];
-  let manufacturer: string = "";
-  let model: string = shipName;
-  for (let i = 0; i < ships.length; i++) {
-    if (
-      ships[i].model.toLowerCase().includes(shipName.toLowerCase()) &&
-      !foundShips.includes(ships[i].owner) &&
-      ships[i].model.toLowerCase().includes(model)
-    ) {
-      model = ships[i].model;
-      manufacturer = ships[i].manufacturer;
-      foundShips.push(ships[i].owner);
-    }
-  }
-  return {
-    model: model,
-    manufacturer: manufacturer,
-    foundShips: foundShips,
-  };
+  let foundShips = ships.filter((ship) =>
+    ship.model.toLowerCase().includes(shipName.toLowerCase())
+  );
+  return foundShips;
 }
 
 async function findVariants(shipName: string, shipVariant: string) {
   let ships = await accessSpreadsheet();
   let shipFullName = shipName + " " + shipVariant;
-  let foundShips = ships.filter((ship) => ship.model === shipFullName);
+  let foundShips = ships.filter(
+    (ship) => ship.model.toLowerCase() === shipFullName.toLowerCase()
+  );
   console.log(foundShips);
   return foundShips;
 }
@@ -97,11 +84,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   }
   let shipData = await findOwners(shipName);
 
-  if (
-    shipData === undefined ||
-    shipData === null ||
-    shipData.foundShips.length === 0
-  ) {
+  if (shipData === undefined || shipData === null || shipData.length === 0) {
     interaction.reply(
       `There's been an error finding the owners of ${shipName}`
     );
@@ -114,19 +97,19 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     .setTimestamp()
     .setFooter({ text: "WTTC-Bot" })
     .setDescription(
-      `The ${shipData.manufacturer} ${shipData.model} is owned by the following members`
+      `The ${shipData[0].manufacturer} ${shipData[0].model} is owned by the following members`
     );
 
-  shipData.foundShips.forEach((owner: any) => {
+  shipData.forEach((ship: any) => {
     let field: EmbedFieldData = {
       name: "Owner",
-      value: owner,
+      value: ship.owner,
       inline: true,
     };
     embeddedMessage.addFields([field]);
   });
 
-  embeddedMessage.setTitle(`${shipData.manufacturer} ${shipData.model}`);
+  embeddedMessage.setTitle(`${shipData[0].manufacturer} ${shipData[0].model}`);
 
   interaction.reply({ embeds: [embeddedMessage] });
 }
