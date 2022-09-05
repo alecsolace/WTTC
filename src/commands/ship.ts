@@ -29,14 +29,28 @@ async function findOwners(shipName: string) {
     foundShips: foundShips,
   };
 }
+
+async function findVariants(shipName: string, shipVariant: string) {
+  let ships = await accessSpreadsheet();
+  let shipFullName = shipName + " " + shipVariant;
+  let foundShips = ships.filter((ship) => ship.model === shipFullName);
+  console.log(foundShips);
+  return foundShips;
+}
 export const data = new SlashCommandBuilder()
   .setName("ship")
   .setDescription("Returns information on the selected ship")
   .addStringOption((option) =>
     option
       .setName("ship")
-      .setDescription('Enter the name of the ship. ex: "Merchantman"')
+      .setDescription('Enter the name of the ship. ex: "600i"')
       .setRequired(true)
+  )
+  .addStringOption((option) =>
+    option
+      .setName("variant")
+      .setDescription('Enter then variant name. Ex: "Explorer"')
+      .setRequired(false)
   );
 
 export async function execute(interaction: CommandInteraction, client: Client) {
@@ -51,6 +65,36 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   }
 
   const shipName = interaction.options.getString("ship")!;
+  const shipVariant = interaction.options.getString("variant");
+
+  if (shipVariant != null && shipVariant !== undefined) {
+    let shipsOwners = await findVariants(shipName, shipVariant);
+
+    const embeddedMessage = new MessageEmbed()
+      .setColor("#0099ff")
+      .setAuthor({ name: "WTTC-Bot" })
+      .setTimestamp()
+      .setFooter({ text: "WTTC-Bot" })
+      .setDescription(
+        `The ${shipsOwners[0].manufacturer} ${shipsOwners[0].model} is owned by the following members`
+      );
+
+    shipsOwners.forEach((ship: any) => {
+      let field: EmbedFieldData = {
+        name: "Owner",
+        value: ship.owner,
+        inline: true,
+      };
+      embeddedMessage.addFields([field]);
+    });
+
+    embeddedMessage.setTitle(
+      `${shipsOwners[0].manufacturer} ${shipsOwners[0].model}`
+    );
+
+    interaction.reply({ embeds: [embeddedMessage] });
+    return;
+  }
   let shipData = await findOwners(shipName);
 
   if (
