@@ -37,7 +37,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     return;
   }
   const embeddedMessage = new MessageEmbed()
-    .setTitle("World Trading Traveling Circus")
+    .setTitle("World Traveling Trading Circus")
     .setColor("AQUA")
     .setAuthor({ name: "WTTC-Bot" })
     .setTimestamp()
