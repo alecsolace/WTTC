@@ -15,107 +15,8 @@ async function findOwners(shipName: string) {
   );
   return foundShips;
 }
-
-async function findVariants(shipName: string, shipVariant: string) {
-  let ships = await accessSpreadsheet();
-  let shipFullName = shipName + " " + shipVariant;
-  let foundShips = ships.filter(
-    (ship) => ship.model.toLowerCase() === shipFullName.toLowerCase()
-  );
-  return foundShips;
-}
-export const data = new SlashCommandBuilder()
-  .setName("ship")
-  .setDescription("Returns information on the selected ship")
-  .addStringOption((option) =>
-    option
-      .setName("ship")
-      .setDescription('Enter the name of the ship. ex: "600i"')
-      .setRequired(true)
-  )
-  .addStringOption((option) =>
-    option
-      .setName("variant")
-      .setDescription('Enter then variant name. Ex: "Explorer"')
-      .setRequired(false)
-  );
-
-export async function execute(interaction: CommandInteraction, client: Client) {
-  if (!interaction?.channelId) {
-    return;
-  }
-
-  const channel = await client.channels.fetch(interaction.channelId);
-
-  if (!channel || channel.type !== "GUILD_TEXT") {
-    return;
-  }
-
-  const shipName = interaction.options.getString("ship")!;
-  const shipVariant = interaction.options.getString("variant");
-
-  if (shipVariant != null && shipVariant !== undefined) {
-    let shipsOwners = await findVariants(shipName, shipVariant);
-
-    const embeddedMessage = new MessageEmbed()
-      .setColor("#0099ff")
-      .setAuthor({ name: "WTTC-Bot" })
-      .setTimestamp()
-      .setFooter({ text: "WTTC-Bot" })
-      .setDescription(
-        `The ${shipsOwners[0].manufacturer} ${shipsOwners[0].model} is owned by the following members`
-      );
-
-    shipsOwners.forEach((ship: any) => {
-      let field: EmbedFieldData = {
-        name: "Owner",
-        value: ship.owner,
-        inline: true,
-      };
-      embeddedMessage.addFields([field]);
-    });
-
-    embeddedMessage.setTitle(
-      `${shipsOwners[0].manufacturer} ${shipsOwners[0].model}`
-    );
-
-    interaction.reply({ embeds: [embeddedMessage] });
-    return;
-  }
-  let shipData = await findOwners(shipName);
-
-  if (shipData === undefined || shipData === null || shipData.length === 0) {
-    interaction.reply(
-      `There's been an error finding the owners of ${shipName}`
-    );
-    return;
-  }
-  let vehicleQuery = shipData[0].model.replace(" ", "-");
-  let vehicleData: any = await getVehicleData(vehicleQuery);
-
-  if (vehicleData === undefined || vehicleData === null) {
-    interaction.reply(
-      `There's been an error finding the owners of ${shipName}`
-    );
-    return;
-  }
-
-  const embeddedMessage = new MessageEmbed()
-    .setColor("#0099ff")
-    .setAuthor({
-      name: `${vehicleData.manufacturer} (${vehicleData.manufacturerId})`,
-    })
-    .setTimestamp()
-    .setFooter({ text: "WTTC-Bot" })
-    .setDescription(vehicleData.description)
-    .setTitle(`${vehicleData.manufacturer} ${vehicleData.name}`);
-
-  let owners: string = "";
-  shipData.forEach((ship: any) => {
-    owners += `${ship.owner}\n`;
-  });
-
-  embeddedMessage.addFields([
+function getFields(vehicleData: any) {
+  return [
     {
       name: "Role",
       value: vehicleData.role,
@@ -203,8 +104,103 @@ export async function execute(interaction: CommandInteraction, client: Client) {
       value: vehicleData.status,
       inline: true,
     },
-    { name: "Owners", value: owners, inline: false },
-  ]);
+  ];
+}
+async function findVariants(shipName: string, shipVariant: string) {
+  let ships = await accessSpreadsheet();
+  let shipFullName = shipName + " " + shipVariant;
+  let foundShips = ships.filter(
+    (ship) => ship.model.toLowerCase() === shipFullName.toLowerCase()
+  );
+  return foundShips;
+}
+export const data = new SlashCommandBuilder()
+  .setName("ship")
+  .setDescription("Returns information on the selected ship")
+  .addStringOption((option) =>
+    option
+      .setName("ship")
+      .setDescription('Enter the name of the ship. ex: "600i"')
+      .setRequired(true)
+  )
+  .addStringOption((option) =>
+    option
+      .setName("variant")
+      .setDescription('Enter then variant name. Ex: "Explorer"')
+      .setRequired(false)
+  );
+
+export async function execute(interaction: CommandInteraction, client: Client) {
+  if (!interaction?.channelId) {
+    return;
+  }
+
+  const channel = await client.channels.fetch(interaction.channelId);
+
+  if (!channel || channel.type !== "GUILD_TEXT") {
+    return;
+  }
+
+  const shipName = interaction.options.getString("ship")!;
+  const shipVariant = interaction.options.getString("variant");
+
+  if (shipVariant != null && shipVariant !== undefined) {
+    let shipsOwners = await findVariants(shipName, shipVariant);
+    let vehicleQuery = shipsOwners[0].model.replace(" ", "-");
+    let vehicleData: any = await getVehicleData(vehicleQuery);
+    let owners: string = "";
+    shipsOwners.forEach((ship) => {
+      owners += ship.owner + "\n";
+    });
+    let fields: EmbedFieldData[] = getFields(vehicleData);
+    fields.push({ name: "Owners", value: owners, inline: false });
+    const embeddedMessage = new MessageEmbed()
+      .setColor("#0099ff")
+      .setAuthor({
+        name: `${vehicleData.manufacturer} (${vehicleData.manufacturerId})`,
+      })
+      .setTimestamp()
+      .setFooter({ text: "WTTC-Bot" })
+      .setDescription(vehicleData.description)
+      .setTitle(`${vehicleData.manufacturer} ${vehicleData.name}`)
+      .addFields(fields);
+
+    interaction.reply({ embeds: [embeddedMessage] });
+    return;
+  }
+  let shipData = await findOwners(shipName);
+
+  if (shipData === undefined || shipData === null || shipData.length === 0) {
+    interaction.reply(
+      `There's been an error finding the owners of ${shipName}`
+    );
+    return;
+  }
+  let vehicleQuery = shipData[0].model.replace(" ", "-");
+  let vehicleData: any = await getVehicleData(vehicleQuery);
+
+  if (vehicleData === undefined || vehicleData === null) {
+    interaction.reply(`There's been an fetching the information from the API`);
+    return;
+  }
+
+  const embeddedMessage = new MessageEmbed()
+    .setColor("#0099ff")
+    .setAuthor({
+      name: `${vehicleData.manufacturer} (${vehicleData.manufacturerId})`,
+    })
+    .setTimestamp()
+    .setFooter({ text: "WTTC-Bot" })
+    .setDescription(vehicleData.description)
+    .setTitle(`${vehicleData.manufacturer} ${vehicleData.name}`);
+
+  let owners: string = "";
+  shipData.forEach((ship: any) => {
+    owners += `${ship.owner}\n`;
+  });
+  let fields = getFields(vehicleData);
+  fields.push({ name: "Owners", value: owners, inline: false });
+  embeddedMessage.addFields(fields);
 
   interaction.reply({ embeds: [embeddedMessage] });
 }
