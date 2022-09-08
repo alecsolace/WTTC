@@ -22,7 +22,6 @@ async function findVariants(shipName: string, shipVariant: string) {
   let foundShips = ships.filter(
     (ship) => ship.model.toLowerCase() === shipFullName.toLowerCase()
   );
-  console.log(foundShips);
   return foundShips;
 }
 export const data = new SlashCommandBuilder()
@@ -92,8 +91,14 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     return;
   }
   let vehicleQuery = shipData[0].model.replace(" ", "-");
-  console.log(vehicleQuery);
   let vehicleData: any = await getVehicleData(vehicleQuery);
+
+  if (vehicleData === undefined || vehicleData === null) {
+    interaction.reply(
+      `There's been an error finding the owners of ${shipName}`
+    );
+    return;
+  }
 
   const embeddedMessage = new MessageEmbed()
     .setColor("#0099ff")
