@@ -92,6 +92,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     return;
   }
   let vehicleQuery = shipData[0].model.replace(" ", "-");
+  console.log(vehicleQuery);
   let vehicleData: any = await getVehicleData(vehicleQuery);
 
   const embeddedMessage = new MessageEmbed()
