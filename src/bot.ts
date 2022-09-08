@@ -3,6 +3,7 @@ import config from "./config";
 import * as commandModules from "./commands";
 import { getFleetValues, getMembers, getShips } from "./googleConfig";
 import fs from "fs";
+import { getVehicleData } from "./WikiService";
 
 const commands = Object(commandModules);
 
