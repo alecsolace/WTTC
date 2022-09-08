@@ -146,7 +146,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
 
   if (shipVariant != null && shipVariant !== undefined) {
     let shipsOwners = await findVariants(shipName, shipVariant);
-    if ((shipsOwners.length === 0)) {
+    if (shipsOwners.length === 0) {
       await interaction.reply("No ships found");
       return;
     }
@@ -203,7 +203,11 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     owners += `${ship.owner}\n`;
   });
   let fields = getFields(vehicleData);
-  fields.push({ name: "Owners", value: owners, inline: false });
+  fields.push({
+    name: `Members that own this ship (${shipData.length} ships)`,
+    value: owners,
+    inline: false,
+  });
   embeddedMessage.addFields(fields);
 
   interaction.reply({ embeds: [embeddedMessage] });
