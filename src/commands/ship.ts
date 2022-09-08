@@ -146,6 +146,10 @@ export async function execute(interaction: CommandInteraction, client: Client) {
 
   if (shipVariant != null && shipVariant !== undefined) {
     let shipsOwners = await findVariants(shipName, shipVariant);
+    if ((shipsOwners.length = 0)) {
+      await interaction.reply("No ships found");
+      return;
+    }
     let vehicleQuery = shipsOwners[0].model.replace(" ", "-");
     let vehicleData: any = await getVehicleData(vehicleQuery);
     let owners: string = "";
