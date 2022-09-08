@@ -146,7 +146,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
 
   if (shipVariant != null && shipVariant !== undefined) {
     let shipsOwners = await findVariants(shipName, shipVariant);
-    if ((shipsOwners.length = 0)) {
+    if ((shipsOwners.length === 0)) {
       await interaction.reply("No ships found");
       return;
     }
