@@ -176,7 +176,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
       .setTitle(`${vehicleData.manufacturer} ${vehicleData.name}`)
       .addFields(fields)
       .setURL(
-        `https://starcitizen.tools/${vehicleData!.name!.replace(" ", "_")}/`
+        `https://starcitizen.tools/${vehicleData!.name!.replace(" ", "_")}`
       );
 
     interaction.reply({ embeds: [embeddedMessage] });
