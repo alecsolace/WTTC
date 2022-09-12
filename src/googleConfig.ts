@@ -3,7 +3,7 @@ import { ship } from "./commands";
 
 const creds = require("../google-credentials.json");
 const doc = new GoogleSpreadsheet(
-  "1P8X1knEkndqaZsavvnRKlmaDV3_tC9DTCrn8yMIwIyE"
+  "1zCv-6z2HqdNISRruH-wDvYT0JZ54ByYonNWBTeyI27s"
 );
 type Ship = {
   manufacturer: string;
