@@ -13,7 +13,7 @@ let manufacturers: string[] = [];
 async function findShips(member: string) {
   let ships = await accessSpreadsheet();
   let ownedShips = ships.filter(
-    (ship) => ship.owner.toLowerCase() == member.toLowerCase()
+    (ship) => ship.owner!.toLowerCase() == member.toLowerCase()
   );
 
   ownedShips.forEach((ship) => {
