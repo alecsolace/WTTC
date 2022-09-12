@@ -169,7 +169,6 @@ export async function execute(interaction: CommandInteraction, client: Client) {
       .setColor("#0099ff")
       .setAuthor({
         name: `${vehicleData.manufacturer} (${vehicleData.manufacturerId})`,
-        url: `https://starcitizen.tools/${vehicleData.manufacturer.replace(" ","_")}/`,
       })
       .setTimestamp()
       .setFooter({ text: "WTTC-Bot" })
@@ -203,7 +202,6 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     .setColor("#0099ff")
     .setAuthor({
       name: `${vehicleData!.manufacturer} (${vehicleData!.manufacturerId})`,
-      url: `https://starcitizen.tools/${vehicleData.manufacturer.replace(" ","_" )}`,
     })
     .setTimestamp()
     .setFooter({ text: "WTTC-Bot" })
