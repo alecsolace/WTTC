@@ -1,4 +1,5 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
+import { ship } from "./commands";
 
 const creds = require("../google-credentials.json");
 const doc = new GoogleSpreadsheet(
@@ -7,7 +8,8 @@ const doc = new GoogleSpreadsheet(
 type Ship = {
   manufacturer: string;
   model: string;
-  owner: string;
+  owner?: string;
+  price?: string;
 };
 type Member = {
   value: string;
@@ -101,4 +103,26 @@ export async function getFleetValues() {
   const fleetValue = rows[0].Total_Fleet_Value;
   const valueMember = rows[0].Average_Per_Member;
   return { totalShips, fleetValue, valueMember };
+}
+
+export async function getShipValues() {
+  await doc.useServiceAccountAuth(creds);
+  await doc.loadInfo();
+
+  const sheet = doc.sheetsByIndex[2];
+  await sheet.loadHeaderRow(3);
+  const rows = await sheet.getRows();
+  let ships: Ship[] = [];
+  rows.forEach((row) => {
+    const name = row.Name;
+    const manufacturer = row.Manufacturer;
+    const inGamePrice = row.aUEC;
+    let ship: Ship = {
+      manufacturer: manufacturer,
+      model: name,
+      price: inGamePrice,
+    };
+    ships.push(ship);
+  });
+  return ships;
 }

@@ -5,7 +5,7 @@ import {
   EmbedFieldData,
   MessageEmbed,
 } from "discord.js";
-import { accessSpreadsheet } from "../googleConfig";
+import { accessSpreadsheet, getShipValues } from "../googleConfig";
 import { getVehicleData, Vehicle } from "../WikiService";
 
 async function findOwners(shipName: string) {
@@ -15,7 +15,9 @@ async function findOwners(shipName: string) {
   );
   return foundShips;
 }
-function getFields(vehicleData: any) {
+async function getFields(vehicleData: Vehicle) {
+  let ships = await getShipValues();
+  let price = ships.find((ship) => ship.model === vehicleData.name)?.price;
   return [
     {
       name: "Role",
@@ -100,6 +102,11 @@ function getFields(vehicleData: any) {
       inline: true,
     },
     {
+      name: "Ingame price",
+      value: price + " aUEC",
+      inline: true,
+    },
+    {
       name: "Status",
       value: vehicleData.status,
       inline: true,
@@ -156,7 +163,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     shipsOwners.forEach((ship) => {
       owners += ship.owner + "\n";
     });
-    let fields: EmbedFieldData[] = getFields(vehicleData);
+    let fields: EmbedFieldData[] = await getFields(vehicleData);
     fields.push({ name: "Owners", value: owners, inline: false });
     const embeddedMessage = new MessageEmbed()
       .setColor("#0099ff")
@@ -202,7 +209,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   shipData.forEach((ship: any) => {
     owners += `${ship.owner}\n`;
   });
-  let fields = getFields(vehicleData);
+  let fields = await getFields(vehicleData);
   fields.push({
     name: `Members that own this ship (${shipData.length} ships)`,
     value: owners,
