@@ -169,13 +169,19 @@ export async function execute(interaction: CommandInteraction, client: Client) {
       .setColor("#0099ff")
       .setAuthor({
         name: `${vehicleData.manufacturer} (${vehicleData.manufacturerId})`,
-        url: `https://starcitizen.tools/${vehicleData.name.replace(" ", "_")}`,
+        url: `https://starcitizen.tools/${vehicleData.manufacturer.replace(
+          " ",
+          "_"
+        )}`,
       })
       .setTimestamp()
       .setFooter({ text: "WTTC-Bot" })
       .setDescription(vehicleData.description)
       .setTitle(`${vehicleData.manufacturer} ${vehicleData.name}`)
-      .addFields(fields);
+      .addFields(fields)
+      .setURL(
+        `https://starcitizen.tools/${vehicleData!.name!.replace(" ", "_")}`
+      );
 
     interaction.reply({ embeds: [embeddedMessage] });
     return;
@@ -199,14 +205,19 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   const embeddedMessage = new MessageEmbed()
     .setColor("#0099ff")
     .setAuthor({
-      name: `${vehicleData.manufacturer} (${vehicleData.manufacturerId})`,
-      url: `https://starcitizen.tools/${vehicleData.name.replace(" ", "_")}`,
+      name: `${vehicleData!.manufacturer} (${vehicleData!.manufacturerId})`,
+      url: `https://starcitizen.tools/${vehicleData.manufacturer.replace(
+        " ",
+        "_"
+      )}`,
     })
     .setTimestamp()
     .setFooter({ text: "WTTC-Bot" })
     .setDescription(vehicleData.description)
-    .setTitle(`${vehicleData.manufacturer} ${vehicleData.name}`);
-
+    .setTitle(`${vehicleData.manufacturer} ${vehicleData.name}`)
+    .setURL(
+      `https://starcitizen.tools/${vehicleData!.name!.replace(" ", "_")}`
+    );
   let owners: string = "";
   shipData.forEach((ship: any) => {
     owners += `${ship.owner}\n`;
