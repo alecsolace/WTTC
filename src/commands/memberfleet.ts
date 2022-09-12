@@ -54,12 +54,12 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     return;
   }
   const embeddedMessage = new MessageEmbed()
-    .setTitle(memberShips[0].owner)
+    .setTitle(memberShips[0].owner!)
     .setColor("AQUA")
     .setAuthor({ name: "WTTC-Bot" })
     .setTimestamp()
     .setFooter({ text: "WTTC-Bot" })
-    .setDescription(`The ships owned by ${memberShips[0].owner}`);
+    .setDescription(`The ships owned by ${memberShips[0].owner!}`);
 
   manufacturers.forEach((manufacturer) => {
     let ships: string = "";
