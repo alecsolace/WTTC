@@ -169,10 +169,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
       .setColor("#0099ff")
       .setAuthor({
         name: `${vehicleData.manufacturer} (${vehicleData.manufacturerId})`,
-        url: `https://starcitizen.tools/${vehicleData.manufacturer.replace(
-          " ",
-          "_"
-        )}`,
+        url: `https://starcitizen.tools/${vehicleData.manufacturer.replace(" ","_")}/`,
       })
       .setTimestamp()
       .setFooter({ text: "WTTC-Bot" })
@@ -180,7 +177,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
       .setTitle(`${vehicleData.manufacturer} ${vehicleData.name}`)
       .addFields(fields)
       .setURL(
-        `https://starcitizen.tools/${vehicleData!.name!.replace(" ", "_")}`
+        `https://starcitizen.tools/${vehicleData!.name!.replace(" ", "_")}/`
       );
 
     interaction.reply({ embeds: [embeddedMessage] });
@@ -206,10 +203,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     .setColor("#0099ff")
     .setAuthor({
       name: `${vehicleData!.manufacturer} (${vehicleData!.manufacturerId})`,
-      url: `https://starcitizen.tools/${vehicleData.manufacturer.replace(
-        " ",
-        "_"
-      )}`,
+      url: `https://starcitizen.tools/${vehicleData.manufacturer.replace(" ","_" )}`,
     })
     .setTimestamp()
     .setFooter({ text: "WTTC-Bot" })
