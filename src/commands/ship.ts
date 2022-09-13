@@ -222,5 +222,5 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   });
   embeddedMessage.addFields(fields);
 
-  await interaction.editReply({ embeds: [embeddedMessage] });
+  interaction.editReply({ embeds: [embeddedMessage] });
 }
