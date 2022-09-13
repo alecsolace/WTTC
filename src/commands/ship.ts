@@ -154,7 +154,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   if (shipVariant != null && shipVariant !== undefined) {
     let shipsOwners = await findVariants(shipName, shipVariant);
     if (shipsOwners.length === 0) {
-      await interaction.reply("No ships found");
+      await interaction.editReply("No ships found");
       return;
     }
     let vehicleQuery = shipsOwners[0].model.replace(" ", "-");
@@ -178,14 +178,13 @@ export async function execute(interaction: CommandInteraction, client: Client) {
       .setURL(
         `https://starcitizen.tools/${vehicleData!.name!.replace(" ", "_")}`
       );
-
-    interaction.reply({ embeds: [embeddedMessage] });
+    await interaction.editReply({ embeds: [embeddedMessage] });
     return;
   }
   let shipData = await findOwners(shipName);
 
   if (shipData === undefined || shipData === null || shipData.length === 0) {
-    interaction.reply(
+    await interaction.editReply(
       `There's been an error finding the owners of ${shipName}`
     );
     return;
@@ -194,7 +193,9 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   let vehicleData: Vehicle = await getVehicleData(vehicleQuery);
 
   if (vehicleData === undefined || vehicleData === null) {
-    interaction.reply(`There's been an fetching the information from the API`);
+    await interaction.editReply(
+      `There's been an fetching the information from the API`
+    );
     return;
   }
 
@@ -222,5 +223,5 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   });
   embeddedMessage.addFields(fields);
 
-  interaction.editReply({ embeds: [embeddedMessage] });
+  await interaction.editReply({ embeds: [embeddedMessage] });
 }
