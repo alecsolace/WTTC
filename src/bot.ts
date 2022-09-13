@@ -1,7 +1,12 @@
 import { Client } from "discord.js";
 import config from "./config";
 import * as commandModules from "./commands";
-import { getFleetValues, getMembers, getShips } from "./googleConfig";
+import {
+  accessSpreadsheet,
+  getFleetValues,
+  getMembers,
+  getShips,
+} from "./googleConfig";
 import fs from "fs";
 import { getVehicleData } from "./WikiService";
 
@@ -13,19 +18,12 @@ export const client = new Client({
 
 client.once("ready", async () => {
   let members = await getMembers();
-  let ships = await getShips();
   fs.writeFile("members.json", JSON.stringify(members), "utf8", (err) => {
     if (err) {
       console.log("Error: ", err);
     }
   });
-  fs.writeFile("ships.json", JSON.stringify(ships), "utf8", (err) => {
-    if (err) {
-      console.log("Error: ", err);
-    }
-  });
   console.log("Bot ready");
-  getFleetValues();
 });
 
 client.on("interactionCreate", async (interaction) => {

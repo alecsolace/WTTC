@@ -57,8 +57,8 @@ export async function getShips() {
   await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
 
-  const sheet = doc.sheetsByIndex[6];
-  await sheet.loadHeaderRow(2);
+  const sheet = doc.sheetsByIndex[0];
+  await sheet.loadHeaderRow(4);
   const rows = await sheet.getRows();
 
   let ships: [name: string, value: string][] = [];
