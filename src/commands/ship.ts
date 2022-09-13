@@ -147,7 +147,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   if (!channel || channel.type !== "GUILD_TEXT") {
     return;
   }
-  await interaction.reply("Working on it");
+  await interaction.reply("Delivering ship information...");
   const shipName = interaction.options.getString("ship")!;
   const shipVariant = interaction.options.getString("variant");
 
@@ -222,5 +222,5 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   });
   embeddedMessage.addFields(fields);
 
-  interaction.editReply({ embeds: [embeddedMessage] });
+  await interaction.editReply({ embeds: [embeddedMessage] });
 }
