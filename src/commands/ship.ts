@@ -191,7 +191,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     return;
   }
   let vehicleQuery = shipData[0].model.replace(" ", "-");
-  let vehicleData: any = await getVehicleData(vehicleQuery);
+  let vehicleData: Vehicle = await getVehicleData(vehicleQuery);
 
   if (vehicleData === undefined || vehicleData === null) {
     interaction.reply(`There's been an fetching the information from the API`);
