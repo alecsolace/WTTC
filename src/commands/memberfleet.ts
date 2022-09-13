@@ -40,7 +40,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   if (!interaction?.channelId) {
     return;
   }
-
+  await interaction.reply("Searching for ships...");
   const channel = await client.channels.fetch(interaction.channelId);
 
   if (!channel || channel.type !== "GUILD_TEXT") {
@@ -50,7 +50,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   const member = interaction.options.getString("member")!;
   let memberShips = await findShips(member);
   if (memberShips.length === 0) {
-    interaction.reply(`Could not find ships for member: ${member}`);
+    await interaction.editReply(`Could not find ships for member: ${member}`);
     return;
   }
   const embeddedMessage = new MessageEmbed()
@@ -78,5 +78,5 @@ export async function execute(interaction: CommandInteraction, client: Client) {
 
   const { user } = interaction;
 
-  interaction.reply({ embeds: [embeddedMessage] });
+  await interaction.editReply({ embeds: [embeddedMessage] });
 }
