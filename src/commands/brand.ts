@@ -12,11 +12,17 @@ const members: [name: string, value: string][] = Object(
 
 async function findShips(brand: string) {
   let ships = await getManufacturers();
+  let shipString = "";
+  let manufacturer = "";
   let ownedShips: any[] = ships.filter((ship) =>
     ship.manufacturer.toLowerCase().includes(brand.toLowerCase())
   );
+  manufacturer = ownedShips[0].manufacturer;
+  ownedShips.forEach((ship) => {
+    shipString += `${ship.model} \n`;
+  });
 
-  return ownedShips;
+  return { shipString, manufacturer };
 }
 
 export const data = new SlashCommandBuilder()
@@ -44,31 +50,26 @@ export async function execute(interaction: CommandInteraction, client: Client) {
 
   const brand = interaction.options.getString("brand")!;
   let memberShips = await findShips(brand);
-  if (memberShips.length == 0) {
+  if (memberShips.shipString.length == 0) {
     await interaction.editReply(`Could not find ships for: ${brand}`);
     return;
   }
   const embeddedMessage = new MessageEmbed()
-    .setTitle(memberShips[0].manufacturer)
+    .setTitle(memberShips.manufacturer)
     .setColor("AQUA")
     .setAuthor({ name: "WTTC-Bot" })
     .setTimestamp()
     .setFooter({ text: "WTTC-Bot" })
     .setDescription(
-      `The brand ${memberShips[0].manufacturer} has the following ships: `
+      `The brand ${memberShips.manufacturer} has the following ships: `
     );
 
-  memberShips = memberShips.sort((a, b) => (a.model > b.model ? 1 : -1));
-  memberShips.forEach((ship) => {
-    let field: EmbedFieldData = {
-      name: ship.manufacturer,
-      value: ship.model,
-      inline: true,
-    };
-    embeddedMessage.addFields([field]);
-  });
-
-  const { user } = interaction;
+  let field: EmbedFieldData = {
+    name: memberShips.manufacturer,
+    value: memberShips.shipString,
+    inline: true,
+  };
+  embeddedMessage.addFields([field]);
 
   await interaction.editReply({ embeds: [embeddedMessage] });
 }
