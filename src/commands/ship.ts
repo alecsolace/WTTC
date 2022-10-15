@@ -11,7 +11,9 @@ import { getVehicleData, Vehicle } from "../WikiService";
 async function findOwners(shipName: string) {
   let ships = await accessSpreadsheet();
   let foundShips = ships.filter((ship) =>
-    ship.model.toLowerCase().includes(shipName.toLowerCase())
+    `${ship.manufacturer.toLowerCase()} ${ship.model.toLowerCase()}`.includes(
+      shipName.toLowerCase()
+    )
   );
   return foundShips;
 }
@@ -21,67 +23,67 @@ async function getFields(vehicleData: Vehicle) {
   return [
     {
       name: "Role",
-      value: vehicleData.role,
+      value: vehicleData.role || "not found",
       inline: true,
     },
     {
       name: "Crew",
-      value: vehicleData.crew,
+      value: vehicleData.crew || "not found",
       inline: true,
     },
     {
       name: "Cargo",
-      value: vehicleData.cargo + " SCU",
+      value: vehicleData.cargo + " SCU" || "not found",
       inline: true,
     },
     {
       name: "Length",
-      value: vehicleData.length + " m",
+      value: vehicleData.length + " m" || "not found",
       inline: true,
     },
     {
       name: "Height",
-      value: vehicleData.height + " m",
+      value: vehicleData.height + " m" || "not found",
       inline: true,
     },
     {
       name: "Beam",
-      value: vehicleData.beam + " m",
+      value: vehicleData.beam + " m" || "not found",
       inline: true,
     },
     {
       name: "Mass",
-      value: vehicleData.mass + " Kg",
+      value: vehicleData.mass + " Kg" || "not found",
       inline: true,
     },
     {
       name: "Combat speed",
-      value: vehicleData.combatSpeed + " m/s",
+      value: vehicleData.combatSpeed + " m/s" || "not found",
       inline: true,
     },
     {
       name: "Max speed",
-      value: vehicleData.maxSpeed + " m/s",
+      value: vehicleData.maxSpeed + " m/s" || "not found",
       inline: true,
     },
     {
       name: "After Burner",
-      value: vehicleData.afterBurner + " m/s",
+      value: vehicleData.afterBurner + " m/s" || "not found",
       inline: true,
     },
     {
       name: "Pitch",
-      value: vehicleData.pitch + " deg/s",
+      value: vehicleData.pitch + " deg/s" || "not found",
       inline: true,
     },
     {
       name: "Yaw",
-      value: vehicleData.yaw + " deg/s",
+      value: vehicleData.yaw + " deg/s" || "not found",
       inline: true,
     },
     {
       name: "Roll",
-      value: vehicleData.roll + " deg/s",
+      value: vehicleData.roll + " deg/s" || "not found",
       inline: true,
     },
     {
@@ -98,24 +100,24 @@ async function getFields(vehicleData: Vehicle) {
     },
     {
       name: "Pledge price",
-      value: "USD $" + vehicleData.pledgePrice,
+      value: "USD $" + vehicleData.pledgePrice || "Not found",
       inline: true,
     },
     {
       name: "Ingame price",
-      value: price + " aUEC",
+      value: price + " aUEC" || "Not found",
       inline: true,
     },
     {
       name: "Status",
-      value: vehicleData.status,
+      value: vehicleData.status || "Not found",
       inline: true,
     },
   ];
 }
 async function findVariants(shipName: string, shipVariant: string) {
   let ships = await accessSpreadsheet();
-  let shipFullName = shipName + " " + shipVariant;
+  let shipFullName = `${shipName} ${shipVariant}`;
   let foundShips = ships.filter(
     (ship) => ship.model.toLowerCase() === shipFullName.toLowerCase()
   );
@@ -184,9 +186,35 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   let shipData = await findOwners(shipName);
 
   if (shipData === undefined || shipData === null || shipData.length === 0) {
-    await interaction.editReply(
-      `There's been an error finding the owners of ${shipName}`
-    );
+    let vehicleQuery = shipName.replace(" ", "-");
+    let vehicleData: any = await getVehicleData(vehicleQuery);
+    if (vehicleData === undefined || vehicleData === null) {
+      await interaction.editReply(
+        `There's been an error finding the owners of ${shipName}`
+      );
+      return;
+    }
+
+    let fields: EmbedFieldData[] = await getFields(vehicleData);
+    const embeddedMessage = new MessageEmbed()
+      .setColor("#0099ff")
+      .setAuthor({
+        name: `${vehicleData.manufacturer} (${vehicleData.manufacturerId})`,
+      })
+      .setTimestamp()
+      .setFooter({ text: "WTTC-Bot" })
+      .setDescription(vehicleData.description || "No description found")
+      .setTitle(`${vehicleData.manufacturer} ${vehicleData.name}`)
+      .setURL(
+        `https://starcitizen.tools/${vehicleData!.name!.replace(" ", "_")}`
+      );
+    fields.push({
+      name: "Owners",
+      value: "No members own this ship",
+      inline: false,
+    });
+    embeddedMessage.addFields(fields);
+    await interaction.editReply({ embeds: [embeddedMessage] });
     return;
   }
   let vehicleQuery = shipData[0].model.replace(" ", "-");
@@ -194,19 +222,18 @@ export async function execute(interaction: CommandInteraction, client: Client) {
 
   if (vehicleData === undefined || vehicleData === null) {
     await interaction.editReply(
-      `There's been an fetching the information from the API`
+      `There's been an error fetching the information from the API`
     );
     return;
   }
-
   const embeddedMessage = new MessageEmbed()
     .setColor("#0099ff")
     .setAuthor({
-      name: `${vehicleData!.manufacturer} (${vehicleData!.manufacturerId})`,
+      name: `${vehicleData.manufacturer} (${vehicleData.manufacturerId})`,
     })
     .setTimestamp()
     .setFooter({ text: "WTTC-Bot" })
-    .setDescription(vehicleData.description)
+    .setDescription(vehicleData.description || "No description found")
     .setTitle(`${vehicleData.manufacturer} ${vehicleData.name}`)
     .setURL(
       `https://starcitizen.tools/${vehicleData!.name!.replace(" ", "_")}`
@@ -215,6 +242,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   shipData.forEach((ship: any) => {
     owners += `${ship.owner}\n`;
   });
+
   let fields = await getFields(vehicleData);
   fields.push({
     name: `Members that own this ship (${shipData.length} ships)`,
