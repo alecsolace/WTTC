@@ -1,11 +1,13 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
-import { ship } from "./commands";
 
 const creds = require("../google-credentials.json");
-const doc = new GoogleSpreadsheet(
+/* const doc = new GoogleSpreadsheet(
   "1zCv-6z2HqdNISRruH-wDvYT0JZ54ByYonNWBTeyI27s"
-);
-type Ship = {
+); // Prod Sheet */
+const doc = new GoogleSpreadsheet(
+  "1P8X1knEkndqaZsavvnRKlmaDV3_tC9DTCrn8yMIwIyE"
+); // Test Sheet
+export type Ship = {
   manufacturer: string;
   model: string;
   owner?: string;
@@ -125,4 +127,18 @@ export async function getShipValues() {
     ships.push(ship);
   });
   return ships;
+}
+
+export async function insertShip(ship: Ship) {
+  await doc.useServiceAccountAuth(creds);
+  await doc.loadInfo();
+
+  const sheet = doc.sheetsByIndex[0];
+  await sheet.loadHeaderRow(4);
+  let insertedRows = await sheet.addRow({
+    Manufacturer: ship.manufacturer,
+    Model: ship.model,
+    Owner: ship.owner!,
+  });
+  return insertedRows;
 }
