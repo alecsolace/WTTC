@@ -1,10 +1,5 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-import {
-  Client,
-  CommandInteraction,
-  EmbedFieldData,
-  MessageEmbed,
-} from "discord.js";
+import * as discordJs from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import { getManufacturers } from "../googleConfig";
 const members: [name: string, value: string][] = Object(
   require("../../members.json")
@@ -37,26 +32,29 @@ export const data = new SlashCommandBuilder()
     //.addChoices(members)
   );
 
-export async function execute(interaction: CommandInteraction, client: Client) {
+export async function execute(
+  interaction: discordJs.CommandInteraction,
+  client: discordJs.Client
+) {
   if (!interaction?.channelId) {
     return;
   }
   await interaction.reply("Searching for ships...");
   const channel = await client.channels.fetch(interaction.channelId);
 
-  if (!channel || channel.type !== "GUILD_TEXT") {
+  if (!channel || channel.type !== discordJs.ChannelType.GuildText) {
     return;
   }
 
-  const brand = interaction.options.getString("brand")!;
+  const brand = interaction.options.get("brand")!.value! as string;
   let memberShips = await findShips(brand);
   if (memberShips.shipString.length == 0) {
     await interaction.editReply(`Could not find ships for: ${brand}`);
     return;
   }
-  const embeddedMessage = new MessageEmbed()
+  const embeddedMessage = new discordJs.EmbedBuilder()
     .setTitle(memberShips.manufacturer)
-    .setColor("AQUA")
+    .setColor("Aqua")
     .setAuthor({ name: "WTTC-Bot" })
     .setTimestamp()
     .setFooter({ text: "WTTC-Bot" })
@@ -64,7 +62,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
       `The brand ${memberShips.manufacturer} has the following ships: `
     );
 
-  let field: EmbedFieldData = {
+  let field: discordJs.EmbedField = {
     name: memberShips.manufacturer,
     value: memberShips.shipString,
     inline: true,

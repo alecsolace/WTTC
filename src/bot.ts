@@ -1,19 +1,13 @@
 import { Client } from "discord.js";
 import config from "./config";
 import * as commandModules from "./commands";
-import {
-  accessSpreadsheet,
-  getFleetValues,
-  getMembers,
-  getShips,
-} from "./googleConfig";
+import { getMembers } from "./googleConfig";
 import fs from "fs";
-import { getVehicleData } from "./WikiService";
 
 const commands = Object(commandModules);
 
 export const client = new Client({
-  intents: ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES"],
+  intents: ["Guilds", "GuildMessages", "DirectMessages"],
 });
 
 client.once("ready", async () => {
@@ -22,6 +16,7 @@ client.once("ready", async () => {
     if (err) {
       console.log("Error: ", err);
     }
+    console.log('The file "members.json" has been saved.');
   });
   console.log("Bot ready");
 });
