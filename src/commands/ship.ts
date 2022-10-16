@@ -2,8 +2,9 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import {
   Client,
   CommandInteraction,
-  EmbedFieldData,
-  MessageEmbed,
+  EmbedField,
+  EmbedBuilder,
+  ChannelType,
 } from "discord.js";
 import { accessSpreadsheet, getShipValues } from "../googleConfig";
 import { getVehicleData, Vehicle } from "../WikiService";
@@ -146,12 +147,12 @@ export async function execute(interaction: CommandInteraction, client: Client) {
 
   const channel = await client.channels.fetch(interaction.channelId);
 
-  if (!channel || channel.type !== "GUILD_TEXT") {
+  if (!channel || channel.type !== ChannelType.GuildText) {
     return;
   }
   await interaction.reply("Delivering ship information...");
-  const shipName = interaction.options.getString("ship")!;
-  const shipVariant = interaction.options.getString("variant");
+  const shipName = interaction.options.get("ship")!.value! as string;
+  const shipVariant = interaction.options.get("variant")?.value as string;
 
   if (shipVariant != null && shipVariant !== undefined) {
     let shipsOwners = await findVariants(shipName, shipVariant);
@@ -165,9 +166,9 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     shipsOwners.forEach((ship) => {
       owners += ship.owner + "\n";
     });
-    let fields: EmbedFieldData[] = await getFields(vehicleData);
+    let fields: EmbedField[] = await getFields(vehicleData);
     fields.push({ name: "Owners", value: owners, inline: false });
-    const embeddedMessage = new MessageEmbed()
+    const embeddedMessage = new EmbedBuilder()
       .setColor("#0099ff")
       .setAuthor({
         name: `${vehicleData.manufacturer} (${vehicleData.manufacturerId})`,
@@ -195,8 +196,8 @@ export async function execute(interaction: CommandInteraction, client: Client) {
       return;
     }
 
-    let fields: EmbedFieldData[] = await getFields(vehicleData);
-    const embeddedMessage = new MessageEmbed()
+    let fields: EmbedField[] = await getFields(vehicleData);
+    const embeddedMessage = new EmbedBuilder()
       .setColor("#0099ff")
       .setAuthor({
         name: `${vehicleData.manufacturer} (${vehicleData.manufacturerId})`,
@@ -226,7 +227,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     );
     return;
   }
-  const embeddedMessage = new MessageEmbed()
+  const embeddedMessage = new EmbedBuilder()
     .setColor("#0099ff")
     .setAuthor({
       name: `${vehicleData.manufacturer} (${vehicleData.manufacturerId})`,
