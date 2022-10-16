@@ -48,7 +48,7 @@ export async function getMembers() {
   let members: [name: string, value: string][] = [];
   rows.forEach((row) => {
     if (row.MEMBER !== "") {
-      let member: [name: string, value: string] = [row.MEMBER, row.MEMBER];
+      let member = row.MEMBER;
       members.push(member);
     }
   });
@@ -91,7 +91,8 @@ export async function getManufacturers() {
       ships.push(ship);
     }
   });
-  return ships;
+  let orderedShips = groupBy(ships, "manufacturer");
+  return orderedShips;
 }
 
 export async function getFleetValues() {
@@ -141,4 +142,17 @@ export async function insertShip(ship: Ship) {
     Owner: ship.owner!,
   });
   return insertedRows;
+}
+
+function groupBy(list: any[], prop: string | number) {
+  return list.reduce((groupped, item) => {
+    var key = item[prop];
+    delete item[prop];
+    if (groupped.hasOwnProperty(key)) {
+      groupped[key].push(item);
+    } else {
+      groupped[key] = [item];
+    }
+    return groupped;
+  }, {});
 }

@@ -1,4 +1,5 @@
 import {
+  AutocompleteInteraction,
   ChannelType,
   Client,
   CommandInteraction,
@@ -8,11 +9,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { insertShip, Ship } from "../googleConfig";
-export const menu = new SelectMenuBuilder()
-  .setCustomId("shipSelect")
-  .addOptions([
-    new SelectMenuOptionBuilder().setLabel("Ship").setValue("ship"),
-  ]);
+const ships: any = Object(require("../../ships.json"));
 
 export const data = new SlashCommandBuilder()
   .setName("addship")
@@ -22,14 +19,50 @@ export const data = new SlashCommandBuilder()
       .setName("manufacturer")
       .setDescription("Enter the manufacturer of the ship. ex: Origin")
       .setRequired(true)
+      .setAutocomplete(true)
   )
   .addStringOption((option) =>
     option
       .setName("model")
       .setDescription("Enter the model of the ship. ex: 890 Jump")
       .setRequired(true)
+      .setAutocomplete(true)
   );
-
+export async function autocomplete(
+  interaction: AutocompleteInteraction,
+  client: Client
+) {
+  const focusedValue = interaction.options.getFocused();
+  if (interaction.options.get("manufacturer")?.focused) {
+    const choices = ships;
+    const options = Object.keys(choices);
+    const filtered = options.filter((choice) =>
+      choice.startsWith(focusedValue)
+    );
+    await interaction.respond(
+      filtered.map((choice) => ({
+        name: choice,
+        value: choice,
+      }))
+    );
+  }
+  if (interaction.options.get("model")?.focused) {
+    const manufacturer: string = interaction.options.get("manufacturer")
+      ?.value! as string;
+    console.log(manufacturer);
+    const choices = ships;
+    console.log(ships[manufacturer]);
+    const filtered = choices[manufacturer].filter((choice: any) =>
+      choice.model.startsWith(focusedValue)
+    );
+    await interaction.respond(
+      filtered.map((choice: any) => ({
+        name: choice.model,
+        value: choice.model,
+      }))
+    );
+  }
+}
 export async function execute(interaction: CommandInteraction, client: Client) {
   if (!interaction?.channelId) {
     return;
