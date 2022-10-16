@@ -9,7 +9,7 @@ async function findShips(brand: string) {
   let ships = await getManufacturers();
   let shipString = "";
   let manufacturer = "";
-  let ownedShips: any[] = ships.filter((ship) =>
+  let ownedShips: any[] = ships.filter((ship: any) =>
     ship.manufacturer.toLowerCase().includes(brand.toLowerCase())
   );
   manufacturer = ownedShips[0].manufacturer;

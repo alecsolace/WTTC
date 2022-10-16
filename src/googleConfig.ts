@@ -1,19 +1,17 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
-import { ship } from "./commands";
 
 const creds = require("../google-credentials.json");
 const doc = new GoogleSpreadsheet(
   "1zCv-6z2HqdNISRruH-wDvYT0JZ54ByYonNWBTeyI27s"
-);
-type Ship = {
+); // Prod Sheet
+/* const doc = new GoogleSpreadsheet(
+  "1P8X1knEkndqaZsavvnRKlmaDV3_tC9DTCrn8yMIwIyE"
+); // Test Sheet */
+export type Ship = {
   manufacturer: string;
   model: string;
   owner?: string;
   price?: string;
-};
-type Member = {
-  value: string;
-  name: string;
 };
 export async function accessSpreadsheet() {
   await doc.useServiceAccountAuth(creds);
@@ -46,7 +44,7 @@ export async function getMembers() {
   let members: [name: string, value: string][] = [];
   rows.forEach((row) => {
     if (row.MEMBER !== "") {
-      let member: [name: string, value: string] = [row.MEMBER, row.MEMBER];
+      let member = row.MEMBER;
       members.push(member);
     }
   });
@@ -89,7 +87,8 @@ export async function getManufacturers() {
       ships.push(ship);
     }
   });
-  return ships;
+  let orderedShips = groupBy(ships, "manufacturer");
+  return orderedShips;
 }
 
 export async function getFleetValues() {
@@ -125,4 +124,34 @@ export async function getShipValues() {
     ships.push(ship);
   });
   return ships;
+}
+
+export async function insertShip(ship: any) {
+  await doc.useServiceAccountAuth(creds);
+  await doc.loadInfo();
+
+  const sheet = doc.sheetsByIndex[0];
+  await sheet.loadHeaderRow(4);
+  let insertedRows = await sheet.addRow({
+    Manufacturer: ship.manufacturer,
+    Model: ship.model,
+    Owner: ship.owner!,
+    "Ship name": ship.shipName,
+    Comments: ship.comments,
+    "TCS prefix?": ship.prefix,
+  });
+  return insertedRows;
+}
+
+function groupBy(list: any[], prop: string | number) {
+  return list.reduce((groupped, item) => {
+    var key = item[prop];
+    delete item[prop];
+    if (groupped.hasOwnProperty(key)) {
+      groupped[key].push(item);
+    } else {
+      groupped[key] = [item];
+    }
+    return groupped;
+  }, {});
 }
