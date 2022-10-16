@@ -28,7 +28,6 @@ client.once("ready", async () => {
 
 client.on("interactionCreate", async (interaction) => {
   if (interaction.type === InteractionType.ApplicationCommandAutocomplete) {
-    console.log("Autocomplete");
     const { commandName } = interaction;
     const command = commands[commandName];
 

@@ -1,21 +1,17 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
 
 const creds = require("../google-credentials.json");
-/* const doc = new GoogleSpreadsheet(
-  "1zCv-6z2HqdNISRruH-wDvYT0JZ54ByYonNWBTeyI27s"
-); // Prod Sheet */
 const doc = new GoogleSpreadsheet(
+  "1zCv-6z2HqdNISRruH-wDvYT0JZ54ByYonNWBTeyI27s"
+); // Prod Sheet
+/* const doc = new GoogleSpreadsheet(
   "1P8X1knEkndqaZsavvnRKlmaDV3_tC9DTCrn8yMIwIyE"
-); // Test Sheet
+); // Test Sheet */
 export type Ship = {
   manufacturer: string;
   model: string;
   owner?: string;
   price?: string;
-};
-type Member = {
-  value: string;
-  name: string;
 };
 export async function accessSpreadsheet() {
   await doc.useServiceAccountAuth(creds);
@@ -130,7 +126,7 @@ export async function getShipValues() {
   return ships;
 }
 
-export async function insertShip(ship: Ship) {
+export async function insertShip(ship: any) {
   await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
 
@@ -140,6 +136,9 @@ export async function insertShip(ship: Ship) {
     Manufacturer: ship.manufacturer,
     Model: ship.model,
     Owner: ship.owner!,
+    "Ship name": ship.shipName,
+    Comments: ship.comments,
+    "TCS prefix?": ship.prefix,
   });
   return insertedRows;
 }
