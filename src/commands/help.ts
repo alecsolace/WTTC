@@ -1,14 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import {
-  Client,
-  CommandInteraction,
-  EmbedFieldData,
-  MessageEmbed,
-} from "discord.js";
+import { Client, CommandInteraction, EmbedBuilder } from "discord.js";
 import { getFleetValues } from "../googleConfig";
-const members: [name: string, value: string][] = Object(
-  require("../../members.json")
-);
 
 async function getValue() {
   let data = await getFleetValues();
@@ -25,9 +17,9 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     return;
   }
 
-  const embeddedMessage = new MessageEmbed()
+  const embeddedMessage = new EmbedBuilder()
     .setAuthor({ name: "World Traveling Trading Circus" })
-    .setColor("AQUA")
+    .setColor("Aqua")
     .setTimestamp()
     .setTitle("WTTC-Bot Help")
     .setDescription(

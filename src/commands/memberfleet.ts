@@ -2,13 +2,12 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import {
   Client,
   CommandInteraction,
-  EmbedFieldData,
-  MessageEmbed,
+  EmbedField,
+  EmbedBuilder,
+  ChannelType,
 } from "discord.js";
 import { accessSpreadsheet } from "../googleConfig";
-const members: [name: string, value: string][] = Object(
-  require("../../members.json")
-);
+
 let manufacturers: string[] = [];
 async function findShips(member: string) {
   let ships = await accessSpreadsheet();
@@ -43,19 +42,19 @@ export async function execute(interaction: CommandInteraction, client: Client) {
   await interaction.reply("Searching for ships...");
   const channel = await client.channels.fetch(interaction.channelId);
 
-  if (!channel || channel.type !== "GUILD_TEXT") {
+  if (!channel || channel.type !== ChannelType.GuildText) {
     return;
   }
 
-  const member = interaction.options.getString("member")!;
+  const member = interaction.options.get("member")!.value! as string;
   let memberShips = await findShips(member);
   if (memberShips.length === 0) {
     await interaction.editReply(`Could not find ships for member: ${member}`);
     return;
   }
-  const embeddedMessage = new MessageEmbed()
+  const embeddedMessage = new EmbedBuilder()
     .setTitle(memberShips[0].owner!)
-    .setColor("AQUA")
+    .setColor("Aqua")
     .setAuthor({ name: "WTTC-Bot" })
     .setTimestamp()
     .setFooter({ text: "WTTC-Bot" })
@@ -68,15 +67,13 @@ export async function execute(interaction: CommandInteraction, client: Client) {
         ships += "\n" + ship.model;
       }
     });
-    let fields: EmbedFieldData = {
+    let fields: EmbedField = {
       name: manufacturer,
       value: ships,
       inline: true,
     };
     embeddedMessage.addFields([fields]);
   });
-
-  const { user } = interaction;
 
   await interaction.editReply({ embeds: [embeddedMessage] });
 }
