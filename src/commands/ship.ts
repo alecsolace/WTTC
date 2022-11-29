@@ -1,10 +1,10 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import {
+  ChannelType,
   Client,
   CommandInteraction,
-  EmbedField,
   EmbedBuilder,
-  ChannelType,
+  EmbedField,
 } from "discord.js";
 import { accessSpreadsheet, getShipValues } from "../googleConfig";
 import { getVehicleData, Vehicle } from "../WikiService";
@@ -180,7 +180,8 @@ export async function execute(interaction: CommandInteraction, client: Client) {
       .addFields(fields)
       .setURL(
         `https://starcitizen.tools/${vehicleData!.name!.replace(" ", "_")}`
-      );
+      )
+      .setImage(vehicleData.imageUrl || "");
     await interaction.editReply({ embeds: [embeddedMessage] });
     return;
   }
@@ -188,7 +189,7 @@ export async function execute(interaction: CommandInteraction, client: Client) {
 
   if (shipData === undefined || shipData === null || shipData.length === 0) {
     let vehicleQuery = shipName.replace(" ", "-");
-    let vehicleData: any = await getVehicleData(vehicleQuery);
+    let vehicleData: Vehicle = await getVehicleData(vehicleQuery);
     if (vehicleData === undefined || vehicleData === null) {
       await interaction.editReply(
         `There's been an error finding the owners of ${shipName}`
@@ -208,7 +209,8 @@ export async function execute(interaction: CommandInteraction, client: Client) {
       .setTitle(`${vehicleData.manufacturer} ${vehicleData.name}`)
       .setURL(
         `https://starcitizen.tools/${vehicleData!.name!.replace(" ", "_")}`
-      );
+      )
+      .setImage(vehicleData.imageUrl || "");
     fields.push({
       name: "Owners",
       value: "No members own this ship",
@@ -236,9 +238,8 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     .setFooter({ text: "WTTC-Bot" })
     .setDescription(vehicleData.description || "No description found")
     .setTitle(`${vehicleData.manufacturer} ${vehicleData.name}`)
-    .setURL(
-      `https://starcitizen.tools/${vehicleData!.name!.replace(" ", "_")}`
-    );
+    .setURL(`https://starcitizen.tools/${vehicleData!.name!.replace(" ", "_")}`)
+    .setImage(vehicleData.imageUrl || "");
   let owners: string = "";
   shipData.forEach((ship: any) => {
     owners += `${ship.owner}\n`;
