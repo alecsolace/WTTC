@@ -1,18 +1,23 @@
-import { GoogleSpreadsheet } from "google-spreadsheet";
+import { GoogleSpreadsheet, GoogleSpreadsheetRow } from "google-spreadsheet";
 
 const creds = require("../google-credentials.json");
+//Prod Sheet
 const doc = new GoogleSpreadsheet(
   "1zCv-6z2HqdNISRruH-wDvYT0JZ54ByYonNWBTeyI27s"
-); // Prod Sheet
-/* const doc = new GoogleSpreadsheet(
+);
+
+/* // Test Sheet
+const doc = new GoogleSpreadsheet(
   "1P8X1knEkndqaZsavvnRKlmaDV3_tC9DTCrn8yMIwIyE"
-); // Test Sheet */
+); */
+
 export type Ship = {
   manufacturer: string;
   model: string;
   owner?: string;
   price?: string;
 };
+
 export async function accessSpreadsheet() {
   await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
@@ -132,15 +137,20 @@ export async function insertShip(ship: any) {
 
   const sheet = doc.sheetsByIndex[0];
   await sheet.loadHeaderRow(4);
-  let insertedRows = await sheet.addRow({
-    Manufacturer: ship.manufacturer,
-    Model: ship.model,
-    Owner: ship.owner!,
-    "Ship name": ship.shipName,
-    Comments: ship.comments,
-    "TCS prefix?": ship.prefix,
-  });
-  return insertedRows;
+  sheet
+    .getRows()
+    .then((data: GoogleSpreadsheetRow[]) =>
+      data.find((row: GoogleSpreadsheetRow) => row.Manufacturer === "")
+    )
+    .then((empty) => {
+      empty!.Manufacturer = ship.manufacturer;
+      empty!.Model = ship.model;
+      empty!.Owner = ship.owner;
+      empty!.Comments = ship.comments;
+      empty!["Ship name"] = ship.shipName;
+      empty!["TCS prefix?"] = ship.prefix;
+      empty!.save();
+    });
 }
 
 function groupBy(list: any[], prop: string | number) {

@@ -9,41 +9,7 @@ import {
 import { insertShip } from "../googleConfig";
 const ships: any = Object(require("../../ships.json"));
 
-export const data = new SlashCommandBuilder()
-  .setName("addship")
-  .setDescription("Add a ship to the spreadhseet")
-  .addStringOption((option) =>
-    option
-      .setName("manufacturer")
-      .setDescription("Enter the manufacturer of the ship. ex: Origin")
-      .setRequired(true)
-      .setAutocomplete(true)
-  )
-  .addStringOption((option) =>
-    option
-      .setName("model")
-      .setDescription("Enter the model of the ship. ex: 890 Jump")
-      .setRequired(true)
-      .setAutocomplete(true)
-  )
-  .addStringOption((option) =>
-    option
-      .setName("name")
-      .setDescription("Enter the name of the ship.")
-      .setRequired(false)
-  )
-  .addStringOption((option) =>
-    option
-      .setName("comments")
-      .setDescription("Enter any comments you want to leave for this ship.")
-      .setRequired(false)
-  )
-  .addBooleanOption((option) =>
-    option
-      .setName("tcs")
-      .setDescription("Add the TCS Prefix to the name of the ship.")
-      .setRequired(false)
-  );
+//Autocomplete function
 export async function autocomplete(
   interaction: AutocompleteInteraction,
   client: Client
@@ -77,6 +43,8 @@ export async function autocomplete(
     );
   }
 }
+
+//Execute function
 export async function execute(interaction: CommandInteraction, client: Client) {
   if (!interaction?.channelId) {
     return;
@@ -113,9 +81,46 @@ export async function execute(interaction: CommandInteraction, client: Client) {
     prefix,
   };
   await insertShip(ship);
+
   await interaction.editReply(
     shipName !== ""
       ? `The following ship has been added to ${owner}: ${manufacturer} ${model}. The ship name is ${shipName}.`
       : `The following ship has been added to ${owner}: ${manufacturer} ${model}.`
   );
 }
+
+export const data = new SlashCommandBuilder()
+  .setName("addship")
+  .setDescription("Add a ship to the spreadhseet")
+  .addStringOption((option) =>
+    option
+      .setName("manufacturer")
+      .setDescription("Enter the manufacturer of the ship. ex: Origin")
+      .setRequired(true)
+      .setAutocomplete(true)
+  )
+  .addStringOption((option) =>
+    option
+      .setName("model")
+      .setDescription("Enter the model of the ship. ex: 890 Jump")
+      .setRequired(true)
+      .setAutocomplete(true)
+  )
+  .addStringOption((option) =>
+    option
+      .setName("name")
+      .setDescription("Enter the name of the ship.")
+      .setRequired(false)
+  )
+  .addStringOption((option) =>
+    option
+      .setName("comments")
+      .setDescription("Enter any comments you want to leave for this ship.")
+      .setRequired(false)
+  )
+  .addBooleanOption((option) =>
+    option
+      .setName("tcs")
+      .setDescription("Add the TCS Prefix to the name of the ship.")
+      .setRequired(false)
+  );

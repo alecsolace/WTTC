@@ -1,8 +1,8 @@
 import { Client, InteractionType } from "discord.js";
-import config from "./config";
-import * as commandModules from "./commands";
-import { getManufacturers, getMembers, getShips } from "./googleConfig";
 import fs from "fs";
+import * as commandModules from "./commands";
+import config from "./config";
+import { getManufacturers, getMembers } from "./googleConfig";
 
 const commands = Object(commandModules);
 

@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import {
+  AutocompleteInteraction,
   ChannelType,
   Client,
   CommandInteraction,
@@ -8,6 +9,7 @@ import {
 } from "discord.js";
 import { accessSpreadsheet, getShipValues } from "../googleConfig";
 import { getVehicleData, Vehicle } from "../WikiService";
+const ships: any = Object(require("../../ships.json"));
 
 async function findOwners(shipName: string) {
   let ships = await accessSpreadsheet();
@@ -124,6 +126,41 @@ async function findVariants(shipName: string, shipVariant: string) {
   );
   return foundShips;
 }
+
+export async function autocomplete(
+  interaction: AutocompleteInteraction,
+  client: Client
+) {
+  const focusedValue = interaction.options.getFocused();
+  if (interaction.options.get("manufacturer")?.focused) {
+    const choices = ships;
+    const options = Object.keys(choices);
+    const filtered = options.filter((choice) =>
+      choice.toLowerCase().startsWith(focusedValue.toLowerCase())
+    );
+    await interaction.respond(
+      filtered.map((choice) => ({
+        name: choice,
+        value: choice,
+      }))
+    );
+  }
+  if (interaction.options.get("model")?.focused) {
+    const manufacturer: string = interaction.options.get("manufacturer")
+      ?.value! as string;
+    const choices = ships;
+    const filtered = choices[manufacturer].filter((choice: any) =>
+      choice.model.startsWith(focusedValue)
+    );
+    await interaction.respond(
+      filtered.map((choice: any) => ({
+        name: choice.model,
+        value: choice.model,
+      }))
+    );
+  }
+}
+
 export const data = new SlashCommandBuilder()
   .setName("ship")
   .setDescription("Returns information on the selected ship")
