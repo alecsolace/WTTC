@@ -153,6 +153,68 @@ export async function insertShip(ship: any) {
     });
 }
 
+export async function deleteShip(ship: any) {
+  await doc.useServiceAccountAuth(creds);
+  await doc.loadInfo();
+
+  const sheet = doc.sheetsByIndex[0];
+  await sheet.loadHeaderRow(4);
+
+  if (ship.name === "" || ship.name === undefined || ship.name === null) {
+    return sheet
+      .getRows()
+      .then((data: GoogleSpreadsheetRow[]) =>
+        data.find(
+          (row: GoogleSpreadsheetRow) =>
+            row.Manufacturer === ship.manufacturer &&
+            row.Model === ship.model &&
+            row.Owner === ship.owner
+        )
+      )
+      .then((found) => {
+        if (!found) {
+          console.log("Ship not found");
+          return false;
+        }
+        found.Manufacturer = "";
+        found.Model = "";
+        found.Owner = "";
+        found.Comments = "";
+        found["Ship name"] = "";
+        found["TCS prefix?"] = false;
+        found.save();
+        return true;
+      });
+  } else {
+    sheet
+      .getRows()
+      .then((data: GoogleSpreadsheetRow[]) =>
+        data.find(
+          (row: GoogleSpreadsheetRow) =>
+            row.Manufacturer === ship.manufacturer &&
+            row.Model === ship.model &&
+            row.Owner === ship.owner &&
+            row["Ship name"] === ship.name
+        )
+      )
+      .then((found) => {
+        if (!found) {
+          console.log("Ship not found");
+          return false;
+        }
+
+        found.Manufacturer = "";
+        found.Model = "";
+        found.Owner = "";
+        found.Comments = "";
+        found["Ship name"] = "";
+        found["TCS prefix?"] = false;
+        found.save();
+        return true;
+      });
+  }
+}
+
 function groupBy(list: any[], prop: string | number) {
   return list.reduce((groupped, item) => {
     var key = item[prop];
