@@ -25,8 +25,39 @@ export type Vehicle = {
   ingamePrice: number;
   pledgePrice: number;
   status: string;
+  imageUrl?: string;
 };
+interface search {
+  pages: Page[];
+}
+
+interface Page {
+  id: number;
+  key: string;
+  title: string;
+  excerpt: string;
+  description: string;
+  thumbnail: Thumbnail;
+}
+
+interface Thumbnail {
+  mimetype: string;
+  size?: any;
+  width: number;
+  height: number;
+  duration?: any;
+  url: string;
+}
 export async function getVehicleData(vehicleName: string) {
+  const toolsResponse = await fetch(
+    `https://starcitizen.tools/rest.php/v1/search/page?q=${vehicleName}&limit=1`,
+    {
+      method: "GET",
+    }
+  );
+  const toolsData: search = await toolsResponse.json();
+  console.log(toolsData.pages[0].thumbnail);
+  const imageUrl = toolsData.pages[0].thumbnail.url;
   const response = await fetch(
     `https://api.star-citizen.wiki/api/vehicles/${vehicleName}`,
     {
@@ -61,6 +92,7 @@ export async function getVehicleData(vehicleName: string) {
     ingamePrice: 0,
     pledgePrice: result.data.msrp || 0,
     status: result.data.production_status.en_EN,
+    imageUrl: imageUrl,
   };
   return vehicle;
 }

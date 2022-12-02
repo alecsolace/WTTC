@@ -8,3 +8,5 @@ build
 
 build/index.js
 google-credentials.json
+
+/.vscode/
