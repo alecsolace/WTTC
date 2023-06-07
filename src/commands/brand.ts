@@ -1,6 +1,5 @@
 import * as discordJs from "discord.js";
 import {SlashCommandBuilder} from "discord.js";
-import * as fs from "fs";
 import {getManufacturers, Ship} from "../googleConfig";
 
 async function findShips(brand: string) {
@@ -79,54 +78,4 @@ export async function execute(
     embeddedMessage.addFields([field]);
 
     await interaction.editReply({embeds: [embeddedMessage]});
-}
-
-//discord autocomplete function in typescript?
-
-export async function autocomplete(
-    interaction: discordJs.CommandInteraction,
-    client: discordJs.Client
-) {
-    if (!interaction?.channelId) {
-        return;
-    }
-    const channel = await client.channels.fetch(interaction.channelId);
-
-    if (!channel || channel.type !== discordJs.ChannelType.GuildText) {
-        return;
-    }
-
-    const brand = interaction.options.get("brand")!.value! as string;
-    fs.readFile(
-        "ships.json",
-        "utf8",
-        async (err, data) => {
-            if (err) {
-                console.error(err);
-                return;
-            }
-            if (memberShips.shipString.length == 0) {
-                await interaction.editReply(`Could not find ships for: ${brand}`);
-                return;
-            }
-            const embeddedMessage = new discordJs.EmbedBuilder()
-                .setTitle(memberShips.manufacturer)
-                .setColor("Aqua")
-                .setAuthor({name: "WTTC-Bot"})
-                .setTimestamp()
-                .setFooter({text: "WTTC-Bot"})
-                .setDescription(
-                    `The brand ${memberShips.manufacturer} has the following ships: `
-                );
-
-            let field: discordJs.EmbedField = {
-                name: memberShips.manufacturer,
-                value: memberShips.shipString,
-                inline: true,
-            };
-            embeddedMessage.addFields([field]);
-
-            await interaction.editReply({embeds: [embeddedMessage]});
-        }
-    );
 }
